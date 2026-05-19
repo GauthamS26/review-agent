@@ -10,10 +10,9 @@ __pycache__/
 venv/
 env/
 
-# Fine-tuned model weights (too large for GitHub — regenerate with misra_finetune.py)
-misra_finetuned/*.safetensors
-misra_finetuned/*.bin
-misra_finetuned/pytorch_model*.bin
+# DVC-managed outputs (tracked via dvc.lock / .dvc files instead)
+misra_train.json
+misra_finetuned/
 
 # IDE / OS
 .vscode/
@@ -29,3 +28,4 @@ mlflow.db
 *.egg-info/
 dist/
 build/
+/misra_finetuned

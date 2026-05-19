@@ -222,7 +222,8 @@ def train(args):
           f"batch={args.batch_size}, grad_accum={GRAD_ACCUM_STEPS}, lr={args.lr}")
 
     model.train()
-    global_step = 0
+    global_step  = 0
+    epoch_losses = []
     optimizer.zero_grad()
 
     for epoch in range(1, args.epochs + 1):
@@ -253,7 +254,9 @@ def train(args):
                       f"step {global_step}  "
                       f"loss {avg:.4f}")
 
-        print(f"[epoch {epoch}] avg loss: {epoch_loss / len(dataloader):.4f}")
+        avg_epoch = epoch_loss / len(dataloader)
+        epoch_losses.append(round(avg_epoch, 6))
+        print(f"[epoch {epoch}] avg loss: {avg_epoch:.4f}")
 
     # ── 8. Save ───────────────────────────────────────────────────────────
     out_dir = Path(args.output_dir)
@@ -270,6 +273,22 @@ def train(args):
     )
     tokenizer.save_pretrained(str(out_dir))
     print(f"\n[save] Fine-tuned model saved → {out_dir.resolve()}")
+
+    # ── 9. Write DVC metrics ──────────────────────────────────────────────
+    metrics = {
+        "final_loss":    epoch_losses[-1],
+        "epoch_losses":  epoch_losses,
+        "epochs":        args.epochs,
+        "train_layers":  args.train_layers,
+        "max_seq_len":   args.max_seq_len,
+        "trainable_params": sum(p.numel() for p in model.parameters() if p.requires_grad),
+        "total_params":     sum(p.numel() for p in model.parameters()),
+    }
+    metrics_path = Path("training_metrics.json")
+    with metrics_path.open("w", encoding="utf-8") as f:
+        json.dump(metrics, f, indent=2)
+    print(f"[metrics] Saved → {metrics_path.resolve()}")
+
     _write_ollama_modelfile(str(out_dir))
 
 

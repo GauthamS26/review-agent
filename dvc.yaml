@@ -1,0 +1,56 @@
+# ============================================================
+# DVC Pipeline — MISRA C:2012 Code Review Fine-Tuning
+# ============================================================
+# Stages:
+#   build_dataset  →  generates misra_train.json
+#   train          →  fine-tunes TinyLlama, writes misra_finetuned/
+#
+# Run a full pipeline:        dvc repro
+# Run one stage:              dvc repro train
+# Show DAG:                   dvc dag
+# Compare experiments:        dvc params diff
+# Push data to remote:        dvc push
+# ============================================================
+
+stages:
+
+  # ── Stage 1: Build the MISRA instruction-tuning dataset ────────────────
+  build_dataset:
+    cmd: python misra_dataset.py
+    deps:
+      - misra_dataset.py
+    params:
+      - dataset.output
+    outs:
+      - ${dataset.output}          # misra_train.json
+
+  # ── Stage 2: Fine-tune TinyLlama on the MISRA dataset ──────────────────
+  train:
+    cmd: >-
+      python misra_finetune.py
+      --model        ${train.model}
+      --data_file    ${dataset.output}
+      --output_dir   ${train.output_dir}
+      --epochs       ${train.epochs}
+      --train_layers ${train.train_layers}
+      --max_seq_len  ${train.max_seq_len}
+      --batch_size   ${train.batch_size}
+      --lr           ${train.lr}
+    deps:
+      - misra_finetune.py
+      - ${dataset.output}          # depends on stage 1 output
+    params:
+      - train.model
+      - train.output_dir
+      - train.epochs
+      - train.train_layers
+      - train.max_seq_len
+      - train.batch_size
+      - train.lr
+    outs:
+      - ${train.output_dir}:       # misra_finetuned/
+          cache: true              # stored in DVC cache / remote
+          persist: true            # keep between runs (model is large)
+    metrics:
+      - training_metrics.json:
+          cache: false             # commit metrics to git, not DVC

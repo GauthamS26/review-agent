@@ -1,0 +1,12 @@
+{
+  "final_loss": 1.1062,
+  "epoch_losses": [
+    1.6415,
+    1.1062
+  ],
+  "epochs": 2,
+  "train_layers": 1,
+  "max_seq_len": 128,
+  "trainable_params": 109582336,
+  "total_params": 1100048384
+}

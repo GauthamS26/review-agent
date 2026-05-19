@@ -1,0 +1,50 @@
+schema: '2.0'
+stages:
+  build_dataset:
+    cmd: python misra_dataset.py
+    deps:
+    - path: misra_dataset.py
+      hash: md5
+      md5: 614a8f41b79f9f04a3d51b823dd09646
+      size: 21538
+    params:
+      params.yaml:
+        dataset.output: misra_train.json
+    outs:
+    - path: misra_train.json
+      hash: md5
+      md5: 83818c3c1ab04f8cb52c2229abbb5527
+      size: 32653
+  train:
+    cmd: python misra_finetune.py --model        
+      TinyLlama/TinyLlama-1.1B-Chat-v1.0 --data_file    misra_train.json 
+      --output_dir   misra_finetuned --epochs       2 --train_layers 1 
+      --max_seq_len  128 --batch_size   1 --lr           2e-05
+    deps:
+    - path: misra_finetune.py
+      hash: md5
+      md5: ba04579711294859885e7ed8f087d48c
+      size: 20102
+    - path: misra_train.json
+      hash: md5
+      md5: 83818c3c1ab04f8cb52c2229abbb5527
+      size: 32653
+    params:
+      params.yaml:
+        train.batch_size: 1
+        train.epochs: 2
+        train.lr: 2e-05
+        train.max_seq_len: 128
+        train.model: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+        train.output_dir: misra_finetuned
+        train.train_layers: 1
+    outs:
+    - path: misra_finetuned
+      hash: md5
+      md5: 9cb830febe7a1e959eb613c210bfeaaa.dir
+      size: 4403854908
+      nfiles: 17
+    - path: training_metrics.json
+      hash: md5
+      md5: 8290bd67ebfe165676036e929da03635
+      size: 208

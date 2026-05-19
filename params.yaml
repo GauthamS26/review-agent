@@ -1,0 +1,16 @@
+# ============================================================
+# DVC Pipeline Parameters — misra_finetune project
+# Edit here and run `dvc repro` to re-execute changed stages.
+# ============================================================
+
+dataset:
+  output: misra_train.json          # path written by misra_dataset.py
+
+train:
+  model: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+  output_dir: misra_finetuned
+  epochs: 2
+  train_layers: 1
+  max_seq_len: 128
+  batch_size: 1
+  lr: 2.0e-5
