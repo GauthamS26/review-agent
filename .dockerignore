@@ -1,0 +1,19 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+*.log
+
+# Large training artifacts managed by DVC
+misra_finetuned
+misra_train.json
+.dvc/cache
+
+# Optional output files
+latest_review.txt
+*.txt

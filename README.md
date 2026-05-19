@@ -203,6 +203,63 @@ python code_review_agent.py /project1 --model llama2 --output p1_review.txt
 python code_review_agent.py /project2 --model llama2:13b --output p2_review.txt
 ```
 
+## FastAPI Service
+
+This project also includes a FastAPI wrapper so the code review agent can be called over HTTP.
+
+### Start API Locally
+```bash
+uvicorn api_server:app --host 0.0.0.0 --port 8000
+```
+
+Swagger UI:
+- `http://localhost:8000/docs`
+
+Available endpoints:
+- `GET /health`
+- `GET /models/default`
+- `POST /review/local`
+- `POST /review/git`
+
+### Example Request (Local Path)
+```bash
+curl -X POST http://localhost:8000/review/local \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source_path": ".",
+    "model": "llama2",
+    "ollama_host": "http://localhost:11434"
+  }'
+```
+
+### Example Request (Git URL)
+```bash
+curl -X POST http://localhost:8000/review/git \
+  -H "Content-Type: application/json" \
+  -d '{
+    "git_url": "https://github.com/user/repo",
+    "model": "llama2",
+    "ollama_host": "http://localhost:11434"
+  }'
+```
+
+## Docker
+
+### Build and Run with Docker
+```bash
+docker build -t review-agent-api .
+docker run -p 8000:8000 -e OLLAMA_HOST=http://host.docker.internal:11434 review-agent-api
+```
+
+### Build and Run with Docker Compose
+```bash
+docker compose up --build
+```
+
+Notes:
+- Ensure Ollama is running on the host machine.
+- Default compose config uses `http://host.docker.internal:11434` for Ollama.
+
 ## Contributing
 
 Feel free to extend this tool with additional features like:
