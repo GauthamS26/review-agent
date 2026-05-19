@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Fine-tuned model weights (too large for GitHub — regenerate with misra_finetune.py)
+misra_finetuned/*.safetensors
+misra_finetuned/*.bin
+misra_finetuned/pytorch_model*.bin
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# MLflow / experiment tracking
+mlruns/
+mlflow.db
+
+# Misc build artifacts
+*.egg-info/
+dist/
+build/
